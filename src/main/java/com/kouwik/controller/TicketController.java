@@ -16,7 +16,7 @@ public class TicketController {
 
     @PostMapping("/tickets")
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
-        Ticket createdTicket = ticketService.createTicket(ticket.getContent());
+        Ticket createdTicket = ticketService.createTicket(ticket.getContent(),ticket.getColumnId());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
     }
 
@@ -39,7 +39,15 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    @PutMapping("/{id}/title")
+    public ResponseEntity<Void> updateTicketTitle(@PathVariable Long id, @RequestBody String newTitle) {
+        boolean updated = ticketService.updateTicketTitle(id, newTitle);
+        if (updated) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     @DeleteMapping("/tickets/{id}")
     public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
         boolean deleted = ticketService.deleteTicket(id);
