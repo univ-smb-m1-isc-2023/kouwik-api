@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -82,5 +83,14 @@ public class TicketService {
         } else {
             return null; // Renvoie null si le ticket n'est pas trouvé
         }
+    }
+
+    public Ticket getTicketById(Long id) {
+        Optional<Ticket> ticket = ticketRepository.findById(id);
+        return ticket.orElse(null);
+    }
+
+    public List<Ticket> getAllTickets() {
+        return ticketRepository.findAll();
     }
 }

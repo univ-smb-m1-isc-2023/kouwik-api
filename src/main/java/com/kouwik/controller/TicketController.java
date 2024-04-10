@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tickets")
 public class TicketController {
@@ -67,5 +69,22 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/tickets")
+    public ResponseEntity<Object> getAllTickets() {
+        List<Ticket> tickets = ticketService.getAllTickets();
+        return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/tickets/{id}")
+    public ResponseEntity<Ticket> getTicketById(@PathVariable Long id) {
+        Ticket ticket = ticketService.getTicketById(id);
+        if (ticket != null) {
+            return ResponseEntity.ok(ticket);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
 }
