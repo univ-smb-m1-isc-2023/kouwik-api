@@ -18,10 +18,11 @@ public class TicketController {
 
     @PostMapping("/tickets")
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
-        Ticket createdTicket = ticketService.createTicket(ticket.getContent(),ticket.getColumnId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
+       // Ticket createdTicket = ticketService.createTicket(ticket.getContent(),ticket.getColumnId());
+        // return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
+        return null;
     }
-
+/*
     @PutMapping("/tickets/{id}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable Long id, @RequestBody Ticket ticket) {
         Ticket updatedTicket = ticketService.updateTicket(id, ticket.getContent());
@@ -85,6 +86,6 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-
+*/
 
 }

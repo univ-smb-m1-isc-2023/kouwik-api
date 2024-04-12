@@ -24,7 +24,7 @@ public class Ticket {
     public Ticket(String content, Integer column) {
         this.content = content;
         this.votes = 0; // Initialiser les votes à 0 pour un nouveau ticket
-        this.columnId = 1;
+        this.columnId = column;
     }
     // Getters et Setters
     public Long getId() {

@@ -29,7 +29,7 @@ public class TicketService {
         messagingTemplate.convertAndSend("/topic/tickets", "New ticket created: " + savedTicket.getId());
         return savedTicket;
     }
-
+/*
     public Ticket voteForTicket(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId).orElse(null);
         if (ticket != null) {
@@ -93,4 +93,5 @@ public class TicketService {
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
     }
+    */
 }
