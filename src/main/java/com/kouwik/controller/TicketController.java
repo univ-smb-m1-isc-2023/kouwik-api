@@ -1,6 +1,4 @@
 package com.kouwik.controller;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-
 import com.kouwik.model.Ticket;
 import com.kouwik.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +14,8 @@ public class TicketController {
 
     @Autowired
     private TicketService ticketService;
-    private SimpMessagingTemplate messagingTemplate;
-    @PostMapping("/trigger-websocket")
-    public ResponseEntity<String> triggerWebsocket() {
-        // Vous pouvez ajouter de la logique ici si nécessaire
-        messagingTemplate.convertAndSend("/topic/message", "ok");
-        return ResponseEntity.ok("Triggered");
-    }
 
-/*
+
     @PostMapping("/tickets")
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
        Ticket createdTicket = ticketService.createTicket(ticket.getContent(),ticket.getColumnId());
@@ -94,6 +85,6 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-*/
+
 
 }
