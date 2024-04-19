@@ -67,15 +67,7 @@ public class TicketService {
             return false; // Indique que le ticket n'a pas été trouvé
         }
     }
-    public boolean updateTicketTitle(Long id, String newTitle) {
-        Ticket ticket = ticketRepository.findById(id).orElse(null);
-        if (ticket != null) {
-            ticket.setTitle(newTitle);
-            ticketRepository.save(ticket);
-            return true;
-        }
-        return false;
-    }
+
     public Ticket updateTicket(Long ticketId, String newContent) {
         Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
         if (optionalTicket.isPresent()) {

@@ -16,8 +16,6 @@ public class Ticket {
     @Column(name = "votes")
     private int votes; // Nombre de votes pour le ticket
 
-    @Column(name = "title")
-    private String title; // Titre du ticket
 
     @ManyToOne(fetch = FetchType.LAZY) // Plusieurs tickets peuvent appartenir à un seul tableau
     @JoinColumn(name = "board_id", nullable = false) // La colonne de clé étrangère dans la table Ticket
@@ -63,13 +61,7 @@ public class Ticket {
         this.votes = votes;
     }
 
-    public String getTitle() {
-        return title;
-    }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public Board getBoard() {
         return board;

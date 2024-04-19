@@ -45,15 +45,7 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PutMapping("/{id}/title")
-    public ResponseEntity<Void> updateTicketTitle(@PathVariable Long id, @RequestBody String newTitle) {
-        boolean updated = ticketService.updateTicketTitle(id, newTitle);
-        if (updated) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+
     @DeleteMapping("/tickets/{id}")
     public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
         boolean deleted = ticketService.deleteTicket(id);
