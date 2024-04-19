@@ -1,4 +1,7 @@
 package com.kouwik.service;
+
+import com.kouwik.model.Board;
+import com.kouwik.repository.BoardRepository;
 import com.kouwik.repository.TicketRepository;
 import com.kouwik.model.Ticket;
 import jakarta.transaction.Transactional;
@@ -12,17 +15,26 @@ import java.util.Optional;
 public class TicketService {
 
     private final TicketRepository ticketRepository; // Déclarez TicketRepository
+    private final BoardRepository boardRepository;
 
     // Injectez TicketRepository via le constructeur
     @Autowired
-    public TicketService(TicketRepository ticketRepository) {
+    public TicketService(TicketRepository ticketRepository, BoardRepository boardRepository) {
         this.ticketRepository = ticketRepository;
+        this.boardRepository = boardRepository;
     }
 
-    public Ticket createTicket(String content, Integer column) {
-        Ticket newTicket = new Ticket(content, column);
-        Ticket savedTicket = ticketRepository.save(newTicket);
-        return savedTicket;
+    public Ticket createTicket(String content, Integer columnId, String boardUuid) {
+        // Retrieve the Board using the boardUuid
+        Board board = boardRepository.findByUuid(boardUuid);
+
+        // Create a new Ticket with the provided content, column, and the retrieved
+        // Board
+        Ticket newTicket = new Ticket();
+        newTicket.setContent(content);
+        newTicket.setColumnId(columnId);
+        newTicket.setBoard(board); // Set the associated Board
+        return ticketRepository.save(newTicket);
     }
 
     public Ticket voteForTicket(Long ticketId) {
@@ -33,6 +45,7 @@ public class TicketService {
         }
         return null;
     }
+
     @Transactional
     public boolean deleteTicket(Long ticketId) {
         try {
@@ -55,15 +68,7 @@ public class TicketService {
             return false; // Indique que le ticket n'a pas été trouvé
         }
     }
-    public boolean updateTicketTitle(Long id, String newTitle) {
-        Ticket ticket = ticketRepository.findById(id).orElse(null);
-        if (ticket != null) {
-            ticket.setTitle(newTitle);
-            ticketRepository.save(ticket);
-            return true;
-        }
-        return false;
-    }
+
     public Ticket updateTicket(Long ticketId, String newContent) {
         Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
         if (optionalTicket.isPresent()) {
@@ -84,4 +89,9 @@ public class TicketService {
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
     }
+
+    public List<Ticket> getTicketsByBoardUuid(String boardUuid) {
+        return ticketRepository.findByBoardUuid(boardUuid);
+    }
+
 }

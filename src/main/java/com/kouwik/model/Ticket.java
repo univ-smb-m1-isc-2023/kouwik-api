@@ -1,31 +1,42 @@
 package com.kouwik.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.GenerationType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
-
-
-@Entity // Cette annotation indique que c'est une entité JPA
+@Entity
 public class Ticket {
 
-    @Id // Cette annotation indique que le champ ci-dessous est la clé primaire de l'entité
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Cette annotation indique que la clé primaire est générée automatiquement par la base de données.
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content; // Un champ représentant le contenu du ticket
-    private int votes; // Un champ représentant le nombre de votes
-    private String title;
-    private int columnId;
-    // Constructeurs, getters et setters
-    public Ticket() {}
+    @Column(name = "content")
+    private String content; // Contenu du ticket
 
-    public Ticket(String content, Integer column) {
-        this.content = content;
-        this.votes = 0; // Initialiser les votes à 0 pour un nouveau ticket
-        this.columnId = column;
+    @Column(name = "votes")
+    private int votes; // Nombre de votes pour le ticket
+
+    @ManyToOne(fetch = FetchType.LAZY) // Plusieurs tickets peuvent appartenir à un seul tableau
+    @JoinColumn(name = "board_id", nullable = false) // La colonne de clé étrangère dans la table Ticket
+    @JsonIgnore
+    private Board board; // Référence au tableau associé
+
+    @Column(name = "column_id")
+    private int columnId; // Identifiant de la colonne dans laquelle le ticket est placé
+
+    // Constructeur par défaut requis par JPA
+    public Ticket() {
     }
+
+    // Constructeur utilisé pour créer un ticket avec toutes les propriétés
+    // nécessaires
+    public Ticket(String content, int columnId, Board board) {
+        this.content = content;
+        this.columnId = columnId;
+        this.board = board;
+        this.votes = 0; // Initialiser les votes à 0 pour un nouveau ticket
+    }
+
     // Getters et Setters
     public Long getId() {
         return id;
@@ -50,18 +61,20 @@ public class Ticket {
     public void setVotes(int votes) {
         this.votes = votes;
     }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
     public int getColumnId() {
         return columnId;
     }
-    public String getTitle() {
-        return title;
-    }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
     public void setColumnId(int columnId) {
         this.columnId = columnId;
     }
-    // Vous pouvez ajouter d'autres méthodes et champs selon vos besoins
 }

@@ -1,4 +1,5 @@
 package com.kouwik.controller;
+
 import com.kouwik.model.Ticket;
 import com.kouwik.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +16,11 @@ public class TicketController {
     @Autowired
     private TicketService ticketService;
 
-
     @PostMapping("/tickets")
-    public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
-       Ticket createdTicket = ticketService.createTicket(ticket.getContent(),ticket.getColumnId());
-         return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
+    public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket, @RequestParam("boardId") String boardId) {
+        // La méthode du service attend maintenant aussi un boardId sous forme de chaîne
+        Ticket createdTicket = ticketService.createTicket(ticket.getContent(), ticket.getColumnId(), boardId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
     }
 
     @PutMapping("/tickets/{id}")
@@ -41,15 +42,7 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PutMapping("/{id}/title")
-    public ResponseEntity<Void> updateTicketTitle(@PathVariable Long id, @RequestBody String newTitle) {
-        boolean updated = ticketService.updateTicketTitle(id, newTitle);
-        if (updated) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+
     @DeleteMapping("/tickets/{id}")
     public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
         boolean deleted = ticketService.deleteTicket(id);
@@ -71,9 +64,8 @@ public class TicketController {
     }
 
     @GetMapping("/tickets")
-    public ResponseEntity<Object> getAllTickets() {
-        List<Ticket> tickets = ticketService.getAllTickets();
-        return ResponseEntity.ok(tickets);
+    public List<Ticket> getTicketsByBoardUuid(@RequestParam String boardUuid) {
+        return ticketService.getTicketsByBoardUuid(boardUuid);
     }
 
     @GetMapping("/tickets/{id}")
@@ -85,6 +77,5 @@ public class TicketController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
 }
