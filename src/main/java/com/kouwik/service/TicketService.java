@@ -1,9 +1,10 @@
 package com.kouwik.service;
+import com.kouwik.model.Board;
+import com.kouwik.repository.BoardRepository;
 import com.kouwik.repository.TicketRepository;
 import com.kouwik.model.Ticket;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,23 +13,29 @@ import java.util.Optional;
 @Service
 public class TicketService {
 
-    private final SimpMessagingTemplate messagingTemplate;
+
     private final TicketRepository ticketRepository; // Déclarez TicketRepository
+    private final BoardRepository boardRepository;
 
     // Injectez TicketRepository via le constructeur
     @Autowired
-    public TicketService(SimpMessagingTemplate messagingTemplate, TicketRepository ticketRepository) {
-        this.messagingTemplate = messagingTemplate;
+    public TicketService(TicketRepository ticketRepository, BoardRepository boardRepository) {
         this.ticketRepository = ticketRepository;
+        this.boardRepository = boardRepository;
     }
 
-    public Ticket createTicket(String content, Integer column) {
-        Ticket newTicket = new Ticket(content, column);
-        Ticket savedTicket = ticketRepository.save(newTicket);
-        // Envoie un message WebSocket à tous les clients connectés pour informer de la création du ticket
-        messagingTemplate.convertAndSend("/topic/tickets", "New ticket created: " + savedTicket.getId());
-        return savedTicket;
+    public Ticket createTicket(String content, Integer columnId, String boardUuid) {
+        // Retrieve the Board using the boardUuid
+        Board board = boardRepository.findByUuid(boardUuid);
+
+        // Create a new Ticket with the provided content, column, and the retrieved Board
+        Ticket newTicket = new Ticket();
+        newTicket.setContent(content);
+        newTicket.setColumnId(columnId);
+        newTicket.setBoard(board);  // Set the associated Board
+        return ticketRepository.save(newTicket);
     }
+
 
     public Ticket voteForTicket(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId).orElse(null);
@@ -42,8 +49,6 @@ public class TicketService {
     public boolean deleteTicket(Long ticketId) {
         try {
             ticketRepository.deleteById(ticketId);
-
-            messagingTemplate.convertAndSend("/topic/tickets", "Ticket deleted: " + ticketId);
             return true; // Indique que la suppression a réussi
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,7 +62,6 @@ public class TicketService {
             Ticket ticket = optionalTicket.get();
             ticket.setColumnId(newColumnId);
             ticketRepository.save(ticket);
-            messagingTemplate.convertAndSend("/topic/tickets", "Ticket moved: " + ticketId);
             return true; // Indique que le déplacement a réussi
         } else {
             return false; // Indique que le ticket n'a pas été trouvé
@@ -78,7 +82,6 @@ public class TicketService {
             Ticket ticket = optionalTicket.get();
             ticket.setContent(newContent);
             Ticket updatedTicket = ticketRepository.save(ticket);
-            messagingTemplate.convertAndSend("/topic/tickets", "Ticket updated: " + ticketId);
             return updatedTicket; // Renvoie le ticket mis à jour
         } else {
             return null; // Renvoie null si le ticket n'est pas trouvé
@@ -93,4 +96,10 @@ public class TicketService {
     public List<Ticket> getAllTickets() {
         return ticketRepository.findAll();
     }
+
+    public List<Ticket> getTicketsByBoardUuid(String boardUuid) {
+        return ticketRepository.findByBoardUuid(boardUuid);
+    }
+
+
 }

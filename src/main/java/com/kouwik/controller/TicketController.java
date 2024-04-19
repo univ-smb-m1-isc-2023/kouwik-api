@@ -17,10 +17,14 @@ public class TicketController {
     private TicketService ticketService;
 
     @PostMapping("/tickets")
-    public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket) {
-        Ticket createdTicket = ticketService.createTicket(ticket.getContent(),ticket.getColumnId());
+    public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket, @RequestParam("boardId") String boardId) {
+        // La méthode du service attend maintenant aussi un boardId sous forme de chaîne
+        Ticket createdTicket = ticketService.createTicket(ticket.getContent(), ticket.getColumnId(), boardId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
     }
+
+
+
 
     @PutMapping("/tickets/{id}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable Long id, @RequestBody Ticket ticket) {
@@ -71,10 +75,11 @@ public class TicketController {
     }
 
     @GetMapping("/tickets")
-    public ResponseEntity<Object> getAllTickets() {
-        List<Ticket> tickets = ticketService.getAllTickets();
-        return ResponseEntity.ok(tickets);
+    public List<Ticket> getTicketsByBoardUuid(@RequestParam String boardUuid) {
+        return ticketService.getTicketsByBoardUuid(boardUuid);
     }
+
+
 
     @GetMapping("/tickets/{id}")
     public ResponseEntity<Ticket> getTicketById(@PathVariable Long id) {
