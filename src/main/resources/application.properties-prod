@@ -1,7 +1,0 @@
-# Propriétés spécifiques à la production
-
-spring.datasource.url=jdbc:postgresql://postgres:5432/db_kouwik
-spring.datasource.username=kouwik_root
-spring.datasource.password=kouwik123!
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
