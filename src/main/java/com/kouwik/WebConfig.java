@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // ou spécifiez un chemin plus spécifique si nécessaire
-                .allowedOrigins("http://localhost:3000") // URL de votre frontend
+                .allowedOrigins("https://kouwik.oups.net") // URL de votre frontend
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
