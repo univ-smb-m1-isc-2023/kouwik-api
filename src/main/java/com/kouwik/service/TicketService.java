@@ -1,15 +1,18 @@
 package com.kouwik.service;
 
 import com.kouwik.model.Board;
+import com.kouwik.model.UserVote;
 import com.kouwik.repository.BoardRepository;
 import com.kouwik.repository.TicketRepository;
 import com.kouwik.model.Ticket;
+import com.kouwik.repository.UserVoteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TicketService {
@@ -17,11 +20,14 @@ public class TicketService {
     private final TicketRepository ticketRepository; // Déclarez TicketRepository
     private final BoardRepository boardRepository;
 
+    private final UserVoteRepository userVoteRepository;
+
     // Injectez TicketRepository via le constructeur
     @Autowired
-    public TicketService(TicketRepository ticketRepository, BoardRepository boardRepository) {
+    public TicketService(TicketRepository ticketRepository, BoardRepository boardRepository, UserVoteRepository userVoteRepository) {
         this.ticketRepository = ticketRepository;
         this.boardRepository = boardRepository;
+        this.userVoteRepository = userVoteRepository;
     }
 
     public Ticket createTicket(String content, Integer columnId, String boardUuid) {
@@ -37,14 +43,33 @@ public class TicketService {
         return ticketRepository.save(newTicket);
     }
 
-    public Ticket voteForTicket(Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId).orElse(null);
-        if (ticket != null) {
-            ticket.setVotes(ticket.getVotes() + 1);
-            return ticketRepository.save(ticket);
+    public Ticket addOrRemoveVote(Long ticketId, UUID userId, boolean addVote) {
+        Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+        if (!ticketOptional.isPresent()) {
+            return null;  // Ticket not found
         }
-        return null;
+        Ticket ticket = ticketOptional.get();
+
+        if (addVote) {
+            // Ajoute toujours un nouveau vote
+            UserVote userVote = new UserVote(userId, ticketId);
+            userVoteRepository.save(userVote);
+            ticket.setVotes(ticket.getVotes() + 1);
+        } else {
+            // Tente de retirer un vote existant pour cet utilisateur et ce ticket
+            UserVote userVote = userVoteRepository.findTopByUserIdAndTicketId(userId, ticketId);
+            if (userVote != null) {
+                userVoteRepository.delete(userVote);
+                ticket.setVotes(ticket.getVotes() - 1);
+            } else {
+                return null;  // User has not voted on this ticket, cannot remove a vote
+            }
+        }
+
+        ticketRepository.save(ticket);
+        return ticket;
     }
+
 
     @Transactional
     public boolean deleteTicket(Long ticketId) {

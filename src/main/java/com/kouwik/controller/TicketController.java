@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/tickets")
@@ -54,14 +55,11 @@ public class TicketController {
     }
 
     @PutMapping("/{id}/vote")
-    public ResponseEntity<Ticket> voteForTicket(@PathVariable Long id) {
-        Ticket votedTicket = ticketService.voteForTicket(id);
-        if (votedTicket != null) {
-            return ResponseEntity.ok(votedTicket);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Ticket> addOrRemoveVote(@PathVariable Long id, @RequestParam UUID userId, @RequestParam boolean addVote) {
+        Ticket updatedTicket = ticketService.addOrRemoveVote(id, userId, addVote);
+        return updatedTicket != null ? ResponseEntity.ok(updatedTicket) : ResponseEntity.notFound().build();
     }
+
 
     @GetMapping("/tickets")
     public List<Ticket> getTicketsByBoardUuid(@RequestParam String boardUuid) {
