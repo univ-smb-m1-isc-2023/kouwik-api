@@ -33,3 +33,6 @@ build/
 .vscode/
 **/TicketServiceTest.java
 **/TicketControllerTest.java
+**/application.properties
+src/test/java/com/kouwik/TicketControlerTest.java
+src/main/resources/application.properties
