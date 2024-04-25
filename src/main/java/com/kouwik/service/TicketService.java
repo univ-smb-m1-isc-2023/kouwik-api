@@ -74,6 +74,16 @@ public class TicketService {
     @Transactional
     public boolean deleteTicket(Long ticketId) {
         try {
+            // Vérifier si le ticket existe avant de tenter de le supprimer
+            Optional<Ticket> ticketOptional = ticketRepository.findById(ticketId);
+            if (!ticketOptional.isPresent()) {
+                return false; // Le ticket n'existe pas
+            }
+
+            // Supprimer d'abord tous les votes associés à ce ticket
+            userVoteRepository.deleteByTicketId(ticketId);
+
+            // Ensuite, supprimer le ticket
             ticketRepository.deleteById(ticketId);
             return true; // Indique que la suppression a réussi
         } catch (Exception e) {
@@ -81,7 +91,6 @@ public class TicketService {
             return false; // Indique que la suppression a échoué
         }
     }
-
     public boolean moveTicket(Long ticketId, int newColumnId) {
         Optional<Ticket> optionalTicket = ticketRepository.findById(ticketId);
         if (optionalTicket.isPresent()) {

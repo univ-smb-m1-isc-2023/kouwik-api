@@ -15,4 +15,6 @@ public interface UserVoteRepository extends JpaRepository<UserVote, Long> {
 
     // Trouver tous les votes d'un utilisateur pour un ticket spécifique
     List<UserVote> findByUserIdAndTicketId(UUID userId, Long ticketId);
+
+    void deleteByTicketId(Long ticketId);
 }
