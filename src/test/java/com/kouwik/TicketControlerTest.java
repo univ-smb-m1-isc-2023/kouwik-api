@@ -65,7 +65,20 @@ class TicketControllerTest {
         assertEquals(existingTicket.getContent(), response.getBody().getContent());
     }
 
+    @Test
+    void testUpdateTicket_NotFound() {
+        Long ticketId = 1L;
+        Ticket updateTicket = new Ticket();
+        updateTicket.setId(ticketId);
+        updateTicket.setContent("Updated content");
 
+        when(ticketService.updateTicket(eq(ticketId), anyString())).thenReturn(null);
+
+        ResponseEntity<Ticket> response = ticketController.updateTicket(ticketId, updateTicket);
+
+        assertEquals(NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
 
     @Test
     void testMoveTicket_Success() {
