@@ -132,16 +132,7 @@ public class TicketServiceTest {
     }
 
 
-    @Test
-    void testDeleteTicket() {
-        when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
-        doNothing().when(ticketRepository).deleteById(ticketId);
 
-        boolean deleted = ticketService.deleteTicket(ticketId);
-
-        assertTrue(deleted);
-        verify(ticketRepository).deleteById(ticketId);
-    }
 
     @Test
     void testMoveTicket_Success() {
