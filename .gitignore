@@ -31,7 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
-**/TicketServiceTest.java
+
 **/TicketControllerTest.java
 **/application.properties
 src/test/java/com/kouwik/TicketControlerTest.java
